@@ -72,8 +72,32 @@ class Tetris {
         this.lastTime = 0;
     }
 
+    bindEvents() {
+        document.addEventListener("keydown", this.handleKeyPress.bind(this))
+        this.startButton.addEventListener("click", this.startGame.bind(this))
+    }
+
     startGame() {
         this.reset();
+        this.spawnPiece();
+    }
+
+    drawGrid() {
+        this.grid.forEach((row, y) => {
+            row.forEach((value, x) => {
+                if (value) {
+                    this.drawBlock(this.ctx, x, y, value)
+
+                }
+            });
+        });
+    }
+
+    drawPiece() {
+
+    }
+    drawBlock(ctx, x, y, pieceClass) {
+        ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue(`--${pieceClass}-color`)
     }
 
     reset() {
@@ -84,6 +108,26 @@ class Tetris {
         this.level = 1;
         this.lines = 0;
         this.gameOver = false;
+    }
+
+    spawnPiece() {
+        if (!this.nextPiece) {
+            this.nextPiece = this.randomPiece()
+
+        }
+        this.currenPiece = this.nextPiece;
+        this.nextPiece = this.randomPiece();
+    }
+
+    randomPiece() {
+        const pieceIndex = Math.floor(Math.random() * this.shapes.length);
+        const piece = this.shapes[pieceIndex];
+        return {
+            shape: piece.shape,
+            class: piece.class,
+            x: Math.floor(this.cols / 2) - Math.ceil(piece.shape[0].length / 2),
+            y: 0
+        };
     }
 
 }
