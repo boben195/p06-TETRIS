@@ -94,10 +94,43 @@ class Tetris {
     }
 
     drawPiece() {
+        this.currenPiece.shape.forEach((row, y) => {
+            row.forEach((value, x) => {
+                if (value) {
+                    this.drawBlock(this.ctx, this.currenPiece.x + x, this.currenPiece.y + y, this.currenPiece.class);
+                }
+            });
+        });
 
     }
+
+    drawNextPiece() {
+        this.nextCtx.fillStyle = "rgba(0, 0, 0, 0.8)"
+        this.nextCtx.fillRect(0, 0, this.nextPieceCanvas.width.nextPieceCanvas.height)
+        
+        const offsetX = (4 - this.nextPiece.shape[0].length) / 2;
+        const offsetY = (4 - this.nextPiece.shape.length) / 2;
+
+        this.nextPiece.shape.forEach((row, y) => {
+            row.forEach((value, x) => {
+                if (value) {
+                    this.drawBlock(this.nextCtx, offsetX + x, offsetY + y, this.nextPiece.class)
+                }
+            })
+        })
+    }
     drawBlock(ctx, x, y, pieceClass) {
-        ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue(`--${pieceClass}-color`)
+        ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue(`--${pieceClass}-color`);
+        ctx.fillRect(x * this.blockSize, y * this.blockSize, this.blockSize, this.blockSize);
+        ctx.strokeStyle = "rgba(0, 0, 0, 0.3";
+        ctx.strockRect = (x * this.blockSize, y * this.blockSize, this.blockSize, this.blockSize);
+
+        ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
+        ctx.beginPath();
+        ctx.moveTo(x * this.blockSize, y * this.blockSize);
+        ctx.lineTo((x + 1) * this.blockSize, y * this.blockSize);
+        ctx.lineTo(x * this.blockSize, (y + 1) * this.blockSize);
+        ctx.fill();
     }
 
     reset() {
