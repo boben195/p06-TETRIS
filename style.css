@@ -1,0 +1,69 @@
+:root {
+    --piece-i-color: #00ffff;
+    --piece-o-color: #d4ff00;
+    --piece-t-color: #bf00ff;
+    --piece-s-color: #56fa04;
+    --piece-z-color: #0091ff;
+    --piece-j-color: #ff0000;
+    --piece-l-color: #ffaa00;
+}
+body {
+    background-color: #111;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+    font-family: "Press Start 2P", system-ui;
+    font-weight: 400;
+    font-style: normal;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+    overflow: hidden;
+}
+.game-container {
+    display: flex;
+    gap: 20px;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+}
+canvas {
+    border: 2px solid #333;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+.side-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 200px;
+}
+.next-piece, .score, .level, .lines {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 10px;
+    border-radius: 5px;
+}
+.next {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    text-align: center;
+    display: block;
+} 
+#start-btn {
+    background-color: #00ff00;
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    font-family: "Press Start 2P", system-ui;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+#start-btn:hover {
+    background-color: #00dd00;
+    transform: scale(1.05);
+}
+.score, .level, .lines {
+    font-size: 14px;
+}
