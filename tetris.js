@@ -82,6 +82,63 @@ class Tetris {
         this.spawnPiece();
     }
 
+    update(time = 0) { 
+        const deltaTime = time - this.lastTime;
+        this.lastTime = time;
+
+        this.dropCounter += deltaTime;
+        if (this.dropCounter > this.dropInterval) {
+            this.move(0, 1);
+            this.dropCounter = 0;
+        }
+        this.draw();
+
+        if (!this.gameOver) {
+            requestAnimationFrame(this.update.bind(this));
+        } else {
+            this.ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+            this.ctx.fillRect(0, 0, this.gameBoard.width, this.gameBoard.height);
+            this.ctx.fillStyle = "#FFFFFF";
+            this.ctx.font = "20px 'Press Start 2P'";
+            this.ctx.textAlign = "center";
+            this.ctx.fillText("GAME OVER", this.gameBoard.width / 2, this.gameBoard.height / 2);
+        }
+    }
+    
+    move(dx, dy) {
+        this.currenPiece.x += dx;
+        this.currenPiece.y += dy;
+        if (this.collision()) {
+            this.currenPiece.x -= dx;
+            this.currenPiece.y -= dy;
+            if (dy > 0) {
+                
+            }
+        }
+    }
+    
+    collision() {
+        return this.currenPiece.shape.some((row, dy) => {
+            row.some((value, dx) => {
+                const x = this.currenPiece.x + dx;
+                const y = this.currenPiece.y + dy;
+                return (
+                    value && (x < 0 || x >= this.cols || y >= this.rows || (this.grid[y] && this.grid[y][x]))
+                )
+            });
+        });
+    }
+
+    draw() {
+        this.ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
+        this.ctx.fillRect(0, 0, this.gameBoard.width, this.gameBoard.height);
+
+        this.drawGrid();
+        this.drawPiece();
+    }
+
+
+
     drawGrid() {
         this.grid.forEach((row, y) => {
             row.forEach((value, x) => {
