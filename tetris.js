@@ -77,9 +77,31 @@ class Tetris {
         this.startButton.addEventListener("click", this.startGame.bind(this))
     }
 
+    handleKeyPress(event) {
+        if (this.gameOver) return;
+
+        switch (event.key) {
+            case "ArrowUp":
+                this.rotate();
+                break;
+            case "ArrowDown":
+                this.move(0, 1);
+                break;
+            case "ArrowLeft":
+                this.move(-1, 0);
+                break;
+            case "ArrowRight":
+                this.move(1, 0);
+                break;
+                
+        }
+
+    }
+
     startGame() {
         this.reset();
         this.spawnPiece();
+        this.update();
     }
 
     update(time = 0) { 
@@ -114,9 +136,47 @@ class Tetris {
             if (dy > 0) {
                 this.freeze();
                 this.clearLines();
-            }
-        }
+                this.spawnPiece();
+            };
+        };
     }
+
+    // rotate() {
+    //     const originalShape = this.currenPiece.shape;
+    //     this.currenPiece.shape = this.currenPiece.shape[0].map((_, i) => {
+    //         this.currenPiece.shape.map(row => row[i]).reverse()
+    //     });
+    //     if (this.collision()) {
+    //         this.currenPiece.shape = originalShape;
+    //     }
+    // }
+
+
+    rotateMatrix(matrix) {
+    return matrix[0].map((_, colIndex) =>
+        matrix.map(row => row[colIndex]).reverse()
+    );
+}
+    rotate() {
+  const rotated = this.rotateMatrix(this.currenPiece.shape);
+  const originalX = this.currenPiece.x;
+
+ 
+  const offsets = [0, -1, 1, -2, 2];
+
+  for (let offset of offsets) {
+    this.currenPiece.shape = rotated;
+    this.currenPiece.x = originalX + offset;
+
+    if (!this.collision()) {
+      return; 
+    }
+  }
+
+  
+  this.currenPiece.shape = this.rotateMatrix(this.rotateMatrix(this.rotateMatrix(rotated))); // 3x rotate back
+  this.currenPiece.x = originalX;
+}
 
     clearLines() {
         let linesCleared = 0;
@@ -137,6 +197,12 @@ class Tetris {
         }
     }
 
+    updateScore() {
+        this.scoreElement.textContent = this.score;
+        this.levelElement.textContent = this.level;
+        this.linesElement.textContent = this.lines;
+    }
+
     freeze() {
         this.currenPiece.shape.forEach((row, dy) => {
             row.forEach((value, dx) => {
@@ -148,15 +214,15 @@ class Tetris {
     }
     
     collision() {
-        return this.currenPiece.shape.some((row, dy) => {
+        return this.currenPiece.shape.some((row, dy) => 
             row.some((value, dx) => {
                 const x = this.currenPiece.x + dx;
                 const y = this.currenPiece.y + dy;
                 return (
                     value && (x < 0 || x >= this.cols || y >= this.rows || (this.grid[y] && this.grid[y][x]))
                 )
-            });
-        });
+            })
+        );
     }
 
     draw() {
@@ -180,7 +246,10 @@ class Tetris {
         });
     }
 
+    
+
     drawPiece() {
+        console.log("drawing piece", this.currenPiece);
         this.currenPiece.shape.forEach((row, y) => {
             row.forEach((value, x) => {
                 if (value) {
@@ -193,7 +262,7 @@ class Tetris {
 
     drawNextPiece() {
         this.nextCtx.fillStyle = "rgba(0, 0, 0, 0.8)"
-        this.nextCtx.fillRect(0, 0, this.nextPieceCanvas.width.nextPieceCanvas.height)
+        this.nextCtx.fillRect(0, 0, this.nextPieceCanvas.width, this.nextPieceCanvas.height)
         
         const offsetX = (4 - this.nextPiece.shape[0].length) / 2;
         const offsetY = (4 - this.nextPiece.shape.length) / 2;
@@ -210,7 +279,7 @@ class Tetris {
         ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue(`--${pieceClass}-color`);
         ctx.fillRect(x * this.blockSize, y * this.blockSize, this.blockSize, this.blockSize);
         ctx.strokeStyle = "rgba(0, 0, 0, 0.3";
-        ctx.strockRect = (x * this.blockSize, y * this.blockSize, this.blockSize, this.blockSize);
+        ctx.strokeRect(x * this.blockSize, y * this.blockSize, this.blockSize, this.blockSize);
 
         ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
         ctx.beginPath();
@@ -228,6 +297,7 @@ class Tetris {
         this.level = 1;
         this.lines = 0;
         this.gameOver = false;
+        this.updateScore();
     }
 
     spawnPiece() {
@@ -237,6 +307,11 @@ class Tetris {
         }
         this.currenPiece = this.nextPiece;
         this.nextPiece = this.randomPiece();
+        this.drawNextPiece();
+
+        if (this.collision()) {
+            this.gameOver = true;
+        }
     }
 
     randomPiece() {
@@ -252,3 +327,4 @@ class Tetris {
 
 }
 const game = new Tetris(20, 10, 30);
+game.bindEvents();
