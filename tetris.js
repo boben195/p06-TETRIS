@@ -112,9 +112,39 @@ class Tetris {
             this.currenPiece.x -= dx;
             this.currenPiece.y -= dy;
             if (dy > 0) {
-                
+                this.freeze();
+                this.clearLines();
             }
         }
+    }
+
+    clearLines() {
+        let linesCleared = 0;
+        for (let y = this.rows - 1; y >= 0; y--) {
+            if (this.grid[y].every(cell => cell)) {
+                this.grid.splice(y, 1);
+                this.grid.unshift(Array(this.cols).fill(0));
+                linesCleared++;
+                y++;
+            };
+        };
+        if (linesCleared > 0) {
+            this.score += [40, 100, 300, 1200][linesCleared - 1] * this.level;
+            this.lines += linesCleared;
+            this.level = Math.floor(this.lines / 10) + 1;
+            this.dropInterval = 1000 - (this.level - 1) * 50;
+            this.updateScore();
+        }
+    }
+
+    freeze() {
+        this.currenPiece.shape.forEach((row, dy) => {
+            row.forEach((value, dx) => {
+                if (value) {
+                    this.grid[this.currenPiece.y + dy][this.currenPiece.x + dx] = this.currenPiece.class;
+                }
+            });
+        });
     }
     
     collision() {
