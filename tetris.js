@@ -326,5 +326,5 @@ class Tetris {
     }
 
 }
-const game = new Tetris(20, 10, 30);
-game.bindEvents();
+// const game = new Tetris(20, 10, 30);
+// game.bindEvents();
